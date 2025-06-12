@@ -1,0 +1,32 @@
+class Estudiante:
+    def __init__(self, id, nombres, apellidos, direccion, telefonos):
+        self.id = id
+        self.nombres = nombres
+        self.apellidos = apellidos
+        self.direccion = direccion
+        self.telefonos = telefonos  # Lista de teléfonos
+
+    def mostrar_datos(self):
+        print(f"ID: {self.id}")
+        print(f"Nombres: {self.nombres}")
+        print(f"Apellidos: {self.apellidos}")
+        print(f"Dirección: {self.direccion}")
+        print("Teléfonos:")
+        for i, telefono in enumerate(self.telefonos):
+            print(f"Teléfono {i + 1}: {telefono}")
+
+
+def main():
+    estudiante = Estudiante(
+        id=1,
+        nombres="Cristian",
+        apellidos="Lescano",
+        direccion=" Baquerizo Moreno",
+        telefonos=["0983910920"]
+    )
+
+    estudiante.mostrar_datos()
+
+
+if __name__ == "__main__":
+    main()
