@@ -1,0 +1,107 @@
+from datetime import datetime
+
+class Paciente:
+    def __init__(self, nombre, cedula, telefono):
+        self.nombre = nombre
+        self.cedula = cedula
+        self.telefono = telefono
+
+    def mostrar_info(self):
+        print(f"Nombre: {self.nombre}")
+        print(f"Cédula: {self.cedula}")
+        print(f"Teléfono: {self.telefono}")
+        print("-------------------------")
+
+class Turno:
+    def __init__(self, paciente, fecha_hora):
+        self.paciente = paciente
+        self.fecha_hora = fecha_hora
+
+    def mostrar_turno(self):
+        print("\n---- Turno ----")
+        print(f"Paciente: {self.paciente.nombre}")
+        print(f"Cédula: {self.paciente.cedula}")
+        print(f"Teléfono: {self.paciente.telefono}")
+        print(f"Fecha y hora del turno: {self.fecha_hora.strftime('%Y-%m-%d %H:%M')}")
+        print("----------------")
+
+def agregar_paciente(lista_pacientes):
+    nombre = input("Ingrese nombre del paciente: ")
+    cedula = input("Ingrese cédula: ")
+    telefono = input("Ingrese teléfono: ")
+
+    paciente = Paciente(nombre, cedula, telefono)
+    lista_pacientes.append(paciente)
+    print("✅ Paciente agregado con éxito.")
+
+def buscar_paciente_por_cedula(lista_pacientes, cedula):
+    for paciente in lista_pacientes:
+        if paciente.cedula == cedula:
+            return paciente
+    return None
+
+def agendar_turno(lista_pacientes, lista_turnos):
+    cedula = input("Ingrese la cédula del paciente: ")
+    paciente = buscar_paciente_por_cedula(lista_pacientes, cedula)
+
+    if paciente is None:
+        print("❌ Paciente no encontrado. Debe agregarlo primero.")
+        return
+
+    fecha_input = input("Ingrese fecha del turno (YYYY-MM-DD): ")
+    hora_input = input("Ingrese hora del turno (HH:MM): ")
+
+    try:
+        fecha_hora = datetime.strptime(f"{fecha_input} {hora_input}", "%Y-%m-%d %H:%M")
+        turno = Turno(paciente, fecha_hora)
+        lista_turnos.append(turno)
+        print("✅ Turno agendado con éxito.")
+    except ValueError:
+        print("❌ Fecha u hora inválida.")
+
+def mostrar_turnos(lista_turnos):
+    if not lista_turnos:
+        print("📭 No hay turnos registrados.")
+    else:
+        print("\n📋 LISTA DE TURNOS:")
+        for turno in lista_turnos:
+            turno.mostrar_turno()
+
+def mostrar_pacientes(lista_pacientes):
+    if not lista_pacientes:
+        print("📭 No hay pacientes registrados.")
+    else:
+        print("\n👥 LISTA DE PACIENTES:")
+        for paciente in lista_pacientes:
+            paciente.mostrar_info()
+
+def menu_principal():
+    lista_pacientes = []
+    lista_turnos = []
+
+    while True:
+        print("\n🏥 AGENDA DE CLÍNICA")
+        print("1. Agregar Paciente")
+        print("2. Agendar Turno")
+        print("3. Mostrar Turnos")
+        print("4. Mostrar Pacientes")
+        print("5. Volver al menú principal (Reiniciar menú)")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            agregar_paciente(lista_pacientes)
+        elif opcion == "2":
+            agendar_turno(lista_pacientes, lista_turnos)
+        elif opcion == "3":
+            mostrar_turnos(lista_turnos)
+        elif opcion == "4":
+            mostrar_pacientes(lista_pacientes)
+        elif opcion == "5":
+            print("🔄 Volviendo al menú principal...")
+            continue
+        else:
+            print("❌ Opción no válida. Intente nuevamente.")
+
+if __name__ == "__main__":
+    menu_principal()
