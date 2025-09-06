@@ -1,0 +1,310 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace TorneoFutbol
+{
+    class Jugador
+    {
+        public string Nombre { get; set; }
+        public string Posicion { get; set; }
+        public int NumeroCamiseta { get; set; }
+
+        public Jugador(string nombre, string posicion, int numeroCamiseta)
+        {
+            Nombre = nombre;
+            Posicion = posicion;
+            NumeroCamiseta = numeroCamiseta;
+        }
+
+        public override string ToString()
+        {
+            return Nombre + " (#" + NumeroCamiseta + ", " + Posicion + ")";
+        }
+    }
+
+    class Equipo
+    {
+        public string Nombre { get; set; }
+        public List<Jugador> Jugadores { get; private set; }
+
+        public Equipo(string nombre)
+        {
+            Nombre = nombre;
+            Jugadores = new List<Jugador>();
+        }
+
+        public void AgregarJugador(Jugador jugador)
+        {
+            foreach (var j in Jugadores)
+            {
+                if (j.NumeroCamiseta == jugador.NumeroCamiseta)
+                {
+                    Console.WriteLine(" Ya existe un jugador con el número #" + jugador.NumeroCamiseta + " en " + Nombre + ".");
+                    return;
+                }
+            }
+            Jugadores.Add(jugador);
+            Console.WriteLine(" Jugador " + jugador.Nombre + " agregado a " + Nombre + ".");
+        }
+
+        public bool EliminarJugador(string nombreJugador)
+        {
+            Jugador jugador = null;
+            foreach (var j in Jugadores)
+            {
+                if (j.Nombre.Equals(nombreJugador, StringComparison.OrdinalIgnoreCase))
+                {
+                    jugador = j;
+                    break;
+                }
+            }
+
+            if (jugador != null)
+            {
+                Jugadores.Remove(jugador);
+                Console.WriteLine(" Jugador " + jugador.Nombre + " eliminado de " + Nombre + ".");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine(" No se encontró al jugador \"" + nombreJugador + "\" en " + Nombre + ".");
+                return false;
+            }
+        }
+
+        public void MostrarJugadores()
+        {
+            if (Jugadores.Count == 0)
+            {
+                Console.WriteLine("  (Sin jugadores)");
+                return;
+            }
+
+            foreach (var j in Jugadores)
+            {
+                Console.WriteLine("  - " + j);
+            }
+        }
+    }
+
+    class Torneo
+    {
+        public string Nombre { get; private set; }
+        public List<Equipo> Equipos { get; private set; }
+
+        public Torneo(string nombre)
+        {
+            Nombre = nombre;
+            Equipos = new List<Equipo>();
+        }
+
+        public void AgregarEquipo(Equipo equipo)
+        {
+            foreach (var e in Equipos)
+            {
+                if (e.Nombre.Equals(equipo.Nombre, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine(" Ya existe el equipo " + equipo.Nombre + ".");
+                    return;
+                }
+            }
+            Equipos.Add(equipo);
+            Console.WriteLine(" Equipo " + equipo.Nombre + " agregado al torneo.");
+        }
+
+        public bool EliminarEquipo(string nombreEquipo)
+        {
+            Equipo equipo = null;
+            foreach (var e in Equipos)
+            {
+                if (e.Nombre.Equals(nombreEquipo, StringComparison.OrdinalIgnoreCase))
+                {
+                    equipo = e;
+                    break;
+                }
+            }
+
+            if (equipo == null)
+            {
+                Console.WriteLine(" No se encontró el equipo " + nombreEquipo + ".");
+                return false;
+            }
+            Equipos.Remove(equipo);
+            Console.WriteLine(" Equipo " + nombreEquipo + " eliminado del torneo.");
+            return true;
+        }
+
+        public void MostrarEquipos()
+        {
+            if (Equipos.Count == 0)
+            {
+                Console.WriteLine("No hay equipos registrados.");
+                return;
+            }
+
+            Console.WriteLine("Equipos en " + Nombre + ":");
+            foreach (var e in Equipos)
+            {
+                Console.WriteLine("- " + e.Nombre + " (Jugadores: " + e.Jugadores.Count + ")");
+                e.MostrarJugadores();
+            }
+        }
+    }
+
+    class Program
+    {
+        static Torneo torneo = new Torneo("Copa Nacional UEA");
+
+        static void Main(string[] args)
+        {
+            Menu();
+        }
+
+        static void Menu()
+        {
+            int opcion = 0;
+            do
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Clear();
+                Console.WriteLine("Torneo de Fútbol UEA\n");
+                Console.WriteLine("1. Ingresar equipo");
+                Console.WriteLine("2. Eliminar equipo");
+                Console.WriteLine("3. Ingresar jugador a un equipo");
+                Console.WriteLine("4. Eliminar jugador de un equipo");
+                Console.WriteLine("5. Lista equipos registrados");
+                Console.WriteLine("6. Salir\n");
+                Console.Write("Seleccione una opción: ");
+
+                string input = Console.ReadLine();
+                if (!int.TryParse(input, out opcion))
+                {
+                    Console.WriteLine(" Opción inválida. Ingrese un número.");
+                    Console.ReadKey();
+                    continue;
+                }
+
+                switch (opcion)
+                {
+                    case 1: AgregarEquipo(); break;
+                    case 2: EliminarEquipo(); break;
+                    case 3: AgregarJugadorAEquipo(); break;
+                    case 4: EliminarJugadorDeEquipo(); break;
+                    case 5: MostrarEquipos(); break;
+                    case 6: Console.WriteLine("Saliendo..."); break;
+                    default: Console.WriteLine(" Opción no válida."); break;
+                }
+
+                if (opcion != 6)
+                {
+                    Console.WriteLine("\nPresione una tecla para continuar...");
+                    Console.ReadKey();
+                }
+
+            } while (opcion != 6);
+        }
+
+        static void AgregarEquipo()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Ingrese el nombre del equipo: ");
+            string nombreEquipo = Console.ReadLine();
+            if (string.IsNullOrEmpty(nombreEquipo)) return;
+
+            Equipo equipo = new Equipo(nombreEquipo.Trim());
+            torneo.AgregarEquipo(equipo);
+        }
+
+        static void EliminarEquipo()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Ingrese el nombre del equipo a eliminar: ");
+            string nombreEquipo = Console.ReadLine();
+            if (string.IsNullOrEmpty(nombreEquipo)) return;
+
+            torneo.EliminarEquipo(nombreEquipo.Trim());
+        }
+
+        static void AgregarJugadorAEquipo()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Ingrese el nombre del equipo: ");
+            string nombreEquipo = Console.ReadLine();
+            if (string.IsNullOrEmpty(nombreEquipo)) return;
+
+            Equipo equipo = null;
+            foreach (var e in torneo.Equipos)
+            {
+                if (e.Nombre.Equals(nombreEquipo, StringComparison.OrdinalIgnoreCase))
+                {
+                    equipo = e;
+                    break;
+                }
+            }
+
+            if (equipo != null)
+            {
+                Console.Write("Ingrese el nombre del jugador: ");
+                string nombreJugador = Console.ReadLine();
+                Console.Write("Ingrese la posición del jugador: ");
+                string posicion = Console.ReadLine();
+                Console.Write("Ingrese el número de camiseta del jugador: ");
+
+                int numeroCamiseta;
+                if (!int.TryParse(Console.ReadLine(), out numeroCamiseta))
+                {
+                    Console.WriteLine(" Número inválido.");
+                    return;
+                }
+
+                Jugador jugador = new Jugador(nombreJugador, posicion, numeroCamiseta);
+                equipo.AgregarJugador(jugador);
+            }
+            else
+            {
+                Console.WriteLine(" Equipo " + nombreEquipo + " no encontrado.");
+            }
+        }
+
+        static void EliminarJugadorDeEquipo()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Ingrese el nombre del equipo: ");
+            string nombreEquipo = Console.ReadLine();
+            if (string.IsNullOrEmpty(nombreEquipo)) return;
+
+            Equipo equipo = null;
+            foreach (var e in torneo.Equipos)
+            {
+                if (e.Nombre.Equals(nombreEquipo, StringComparison.OrdinalIgnoreCase))
+                {
+                    equipo = e;
+                    break;
+                }
+            }
+
+            if (equipo != null)
+            {
+                Console.WriteLine("Jugadores en " + equipo.Nombre + ":");
+                equipo.MostrarJugadores();
+
+                Console.Write("Ingrese el nombre del jugador a eliminar: ");
+                string nombreJugador = Console.ReadLine();
+                if (string.IsNullOrEmpty(nombreJugador)) return;
+
+                equipo.EliminarJugador(nombreJugador);
+            }
+            else
+            {
+                Console.WriteLine(" Equipo " + nombreEquipo + " no encontrado.");
+            }
+        }
+
+        static void MostrarEquipos()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            torneo.MostrarEquipos();
+        }
+    }
+}
